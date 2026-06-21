@@ -127,6 +127,24 @@ const imageList = computed({
 
 function modeChange(newVal: string) {
   if (newVal == modelParmas.value.mode) return;
+
+  const applyMode = async (v: string) => {
+    modelParmas.value.mode = v;
+    // 同步更新所有分镜的 modelMode，使分镜面板布局响应模式切换
+    const simplifiedMode = Array.isArray(v) ? "multiModal" : v;
+    const storyboardIds = storyboardList.value.map((s: any) => s.id).filter(Boolean);
+    if (storyboardIds.length) {
+      try {
+        await Promise.all(storyboardIds.map((id: number) =>
+          axios.post("/production/storyboard/editStoryboardInfo", { id, modelMode: simplifiedMode })
+        ));
+        // 同步更新本地数据
+        storyboardList.value.forEach((s: any) => { s.modelMode = simplifiedMode; });
+        window.$message.success(`已切换至「${getCurrentModeLabel(simplifiedMode)}」模式`);
+      } catch { /* 静默失败 */ }
+    }
+  };
+
   if ((imageList.value.length || currentTrack.value?.prompt) && modelParmas.value.mode) {
     const dialog = DialogPlugin.confirm({
       header: $t("workbench.generate.modeChange"),
@@ -137,13 +155,23 @@ function modeChange(newVal: string) {
         imageList.value = [];
         currentTrack.value.prompt = "";
         dialog.destroy();
-        modelParmas.value.mode = newVal;
+        await applyMode(newVal);
       },
     });
   } else if (newVal) {
-    modelParmas.value.mode = newVal;
+    applyMode(newVal);
   }
 }
+
+const MODE_LABEL_MAP_WORKBENCH: Record<string, string> = {
+  text: "文生视频",
+  firstFrame: "首帧生视频",
+  firstLastFrame: "首尾帧生视频",
+  multiModal: "多模态参考",
+  videoExtension: "视频延长",
+  videoEditing: "视频编辑",
+};
+function getCurrentModeLabel(m: string) { return MODE_LABEL_MAP_WORKBENCH[m] || m; }
 const modeList = computed(() => {
   const modeLabelMap: Record<string, string> = {
     text: "文生视频",
