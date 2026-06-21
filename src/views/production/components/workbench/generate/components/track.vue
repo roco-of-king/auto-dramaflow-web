@@ -84,6 +84,7 @@ const props = defineProps<{
   modelParmas: ModelSetting;
   imageList: UploadItem[];
   clampDuration: (trackDuration: number) => number;
+  storyboardList?: any[];
 }>();
 const activeTrackIndex = defineModel("activeTrackIndex", {
   default: 0,
@@ -311,6 +312,23 @@ function batchGenVideo() {
       const checkedTrackData = trackList.value.filter((track) => checkedTrackIds.value.includes(track.id));
       const notHasPrompt = checkedTrackData.filter((i) => !i.prompt);
       if (notHasPrompt.length) return window.$message.warning($t("workbench.generate.skipDataWithEmptyVideoPromptWords"));
+
+      // 就绪检查：首尾帧模式下检查分镜首尾帧图是否已生成
+      const mode = props.modelParmas.mode;
+      const isDualFrame = mode === "firstLastFrame" || mode === "startEndRequired";
+      const unreadyTracks: { index: number; reason: string }[] = [];
+      if (isDualFrame && props.storyboardList?.length) {
+        for (const track of checkedTrackData) {
+          const sb = props.storyboardList.find((s: any) => s.trackId === track.id);
+          if (!sb) { unreadyTracks.push({ index: trackList.value.indexOf(track) + 1, reason: "分镜数据未找到" }); continue; }
+          if (!sb.firstFramePath) unreadyTracks.push({ index: trackList.value.indexOf(track) + 1, reason: "首帧图缺失" });
+          if (!sb.lastFramePath) unreadyTracks.push({ index: trackList.value.indexOf(track) + 1, reason: "尾帧图缺失" });
+        }
+        if (unreadyTracks.length) {
+          const msg = unreadyTracks.map((t) => `S${String(t.index).padStart(2, "0")}: ${t.reason}`).join("、");
+          return window.$message.warning(`以下分镜尚未就绪，已跳过：${msg}`);
+        }
+      }
 
       const trackData = checkedTrackData.map((track) => {
         const trackId = track.id;

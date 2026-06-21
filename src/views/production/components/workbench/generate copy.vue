@@ -964,6 +964,12 @@ function pickStoryboard(sb: StoryboardItem) {
 // 切换模式：重建 uploadBox，同时将已有图片按顺序填入对应槽位
 watch(selectMode, (val) => {
   if (!val) return void (uploadBox.value = []);
+  // 同步当前轨道对应分镜的 modelMode
+  const activeTrack = trackList.value[activeTrackIndex.value] as any;
+  if (activeTrack?.storyboardId) {
+    const simplifiedMode = (typeof val === "string" && val.startsWith("[")) ? "multiModal" : val;
+    axios.post("/production/storyboard/editStoryboardInfo", { id: activeTrack.storyboardId, modelMode: simplifiedMode }).catch(() => {});
+  }
   const oldBox = uploadBox.value;
   const activeTrack = trackList.value[activeTrackIndex.value];
 

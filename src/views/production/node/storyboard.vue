@@ -458,9 +458,20 @@ async function save({ imageUrl, flowId }: { imageUrl: string; flowId: number }) 
 }
 
 async function removeFn(id: number) {
+  // 检查是否有后续分镜继承此分镜的尾帧
+  const idx = storyboard.value.findIndex((s) => s.id === id);
+  let inheritWarning = "";
+  if (idx !== -1 && idx < storyboard.value.length - 1) {
+    const nextItem = storyboard.value[idx + 1];
+    const currentItem = storyboard.value[idx];
+    if (nextItem?.modelMode === "firstLastFrame" && !nextItem.firstFramePath && currentItem?.lastFramePath) {
+      inheritWarning = `\n\n⚠ S${String(idx + 2).padStart(2, "0")}-01 首帧正继承自此分镜的尾帧图，删除后需手动为 S${String(idx + 2).padStart(2, "0")}-01 补充首帧图。`;
+    }
+  }
+
   const dialog = DialogPlugin.confirm({
     header: $t("workbench.assets.confirmDeleteHeader"),
-    body: $t("workbench.production.node.storyboard.confirmDeleteBody"),
+    body: $t("workbench.production.node.storyboard.confirmDeleteBody") + inheritWarning,
     confirmBtn: $t("workbench.assets.deleteBtn"),
     cancelBtn: $t("workbench.assets.cancelBtn"),
     theme: "warning",

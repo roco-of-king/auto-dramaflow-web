@@ -37,6 +37,7 @@
         v-model:activeTrackIndex="activeTrackIndex"
         v-model="trackList"
         :image-list="imageList"
+        :storyboard-list="storyboardList"
         @change="trackChange"
         :modelParmas="modelParmas"
         :clampDuration="clampDuration"
