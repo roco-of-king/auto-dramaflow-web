@@ -1,7 +1,12 @@
 <template>
   <t-card class="storyboard">
     <div class="titleBar dragHandle pr">
-      <div class="title">{{ $t("workbench.production.node.storyboard.title") }}</div>
+      <div class="title">
+        {{ $t("workbench.production.node.storyboard.title") }}
+        <t-tag v-if="isFirstLastFrameMode" theme="primary" variant="light" size="small" style="margin-left:8px">首尾帧模式</t-tag>
+        <t-tag v-else-if="isMultiModalMode" theme="success" variant="light" size="small" style="margin-left:8px">多模态参考模式</t-tag>
+        <t-tag v-else-if="isTextMode" theme="default" variant="light" size="small" style="margin-left:8px">文生视频模式</t-tag>
+      </div>
       <Handle :id="props.handleIds.target" type="target" :position="Position.Left" style="left: calc(-1 * var(--td-comp-paddingLR-xl))" />
       <Handle :id="props.handleIds.source" type="source" :position="Position.Right" style="right: calc(-1 * var(--td-comp-paddingLR-xl))" />
     </div>
@@ -222,9 +227,15 @@ const gridScale = useLocalStorage("storyboardGridScale", 1);
 const hoveredIndex = ref<number | null>(null);
 const selectedIds = ref<number[]>([]);
 
-// 判断当前分镜面板是否为首尾帧模式
+// 判断当前分镜面板模式
 const isFirstLastFrameMode = computed(() =>
   storyboard.value.some((s) => s.modelMode === "firstLastFrame"),
+);
+const isMultiModalMode = computed(() =>
+  storyboard.value.some((s) => s.modelMode === "multiModal"),
+);
+const isTextMode = computed(() =>
+  storyboard.value.length > 0 && storyboard.value.every((s) => s.modelMode === "text" || !s.modelMode),
 );
 
 function setHoveredFrame(index: number | null) {
