@@ -5,6 +5,7 @@ import { useChat } from "@/utils/useChat";
 import type { FlowData, Storyboard } from "@/views/production/utils/flowBuilder";
 import type { ChatMessagesData } from "@tdesign-vue-next/chat";
 import { useThrottleFn } from "@vueuse/core";
+import { DialogPlugin } from "tdesign-vue-next";
 
 function makeProductionAgentStore(projectId: string) {
   return defineStore(`productionAgent-${projectId}`, () => {
@@ -450,7 +451,50 @@ function makeProductionAgentStore(projectId: string) {
       if (!connected.value) connect();
       socket.value!.emit("updateContext", ctx);
     }
+    /** 分镜表重写前确认弹窗 — P10 视频保留策略 */
+    async function confirmRewriteStoryboard(items: any[]): Promise<boolean> {
+      return new Promise((resolve) => {
+        const checkedItems = reactive({ saveImages: false, saveVideos: false, exportData: false });
+        const allChecked = computed(() => checkedItems.saveImages && checkedItems.saveVideos && checkedItems.exportData);
+
+        const bodyVNode = () =>
+          h("div", { style: "display:flex;flex-direction:column;gap:12px;padding:8px 0" }, [
+            h("div", { style: "color:var(--td-warning-color);font-weight:600" }, "⚠ 此操作将清除以下内容："),
+            h("div", { style: "font-size:13px;color:var(--td-text-color-secondary);line-height:1.6" }, [
+              h("div", `• 所有分镜的首尾帧图片 (共 ${flowData.value.storyboard.length * 2} 张可生成)`),
+              h("div", "• 所有分镜面板的提示词修改"),
+              h("div", "• 所有视频工作台的生成记录"),
+            ]),
+            h("div", { style: "font-size:13px;font-weight:600;margin-top:8px" }, "请先确认以下事项："),
+            h("t-checkbox", { checked: checkedItems.saveImages, "onUpdate:checked": (v: boolean) => (checkedItems.saveImages = v) }, () => "☐ 已保存需要的分镜面板图片到本地"),
+            h("t-checkbox", { checked: checkedItems.saveVideos, "onUpdate:checked": (v: boolean) => (checkedItems.saveVideos = v) }, () => "☐ 已保存需要的视频到本地"),
+            h("t-checkbox", { checked: checkedItems.exportData, "onUpdate:checked": (v: boolean) => (checkedItems.exportData = v) }, () => "☐ 已导出分镜表数据（如需要）"),
+          ]);
+
+        const dlg = DialogPlugin.confirm({
+          header: "⚠ 即将重写分镜表",
+          body: bodyVNode,
+          width: 480,
+          confirmBtn: { content: "我已确认，开始重写", theme: "warning", disabled: !allChecked.value },
+          cancelBtn: { content: "取消" },
+          onConfirm: () => { dlg.destroy(); resolve(true); },
+          onCancel: () => { dlg.destroy(); resolve(false); },
+        });
+
+        // 监听复选框状态更新按钮禁用
+        watch(allChecked, (val) => {
+          dlg.update({ confirmBtn: { content: "我已确认，开始重写", theme: "warning", disabled: !val } });
+        });
+      });
+    }
+
     async function addStoryboardInfo(items: any[]) {
+      // P10: 如果已有分镜数据，先弹确认窗
+      if (flowData.value.storyboard.length > 0) {
+        const confirmed = await confirmRewriteStoryboard(items);
+        if (!confirmed) return;
+      }
+
       const { data } = await axios.post("/production/storyboard/batchAddStoryboardInfo", {
         scriptId: episodesId.value,
         data: items,
@@ -465,6 +509,14 @@ function makeProductionAgentStore(projectId: string) {
           item.src = updated.src;
           item.state = updated.state;
           item.associateAssetsIds = updated.associateAssetsIds;
+          // 同步首尾帧字段
+          item.firstFrameState = updated.firstFrameState;
+          item.lastFrameState = updated.lastFrameState;
+          item.firstFramePrompt = updated.firstFramePrompt;
+          item.lastFramePrompt = updated.lastFramePrompt;
+          item.inTransitionDesc = updated.inTransitionDesc;
+          item.outTransitionDesc = updated.outTransitionDesc;
+          item.modelMode = updated.modelMode;
         }
       });
     }

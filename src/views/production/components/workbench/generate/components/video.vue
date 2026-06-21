@@ -41,6 +41,10 @@
             <t-loading size="24px" />
             <span class="loadingText">{{ $t("workbench.generate.generating") }}</span>
           </div>
+          <!-- 生成模式标签 -->
+          <t-tag v-if="v.mode" class="modeTag" size="small" variant="light" :theme="v.mode === 'firstLastFrame' ? 'primary' : v.mode === 'videoExtension' ? 'warning' : v.mode === 'videoEditing' ? 'success' : 'default'">
+            {{ v.mode === 'firstLastFrame' ? '首尾帧' : v.mode === 'videoExtension' ? '延长' : v.mode === 'videoEditing' ? '编辑' : v.mode }}
+          </t-tag>
           <t-tooltip v-if="v.state == '生成失败'" placement="top" :content="v?.errorReason! ?? ''" theme="light">
             <t-tag class="stateTag" theme="danger" size="small">
               {{ $t("workbench.generate.generateFailed") }}
@@ -285,6 +289,12 @@ function previewVideo(v: HistoryVideoItem) {
           font-size: 11px;
           color: #fff;
         }
+      }
+      .modeTag {
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        z-index: 2;
       }
       .stateTag {
         position: absolute;

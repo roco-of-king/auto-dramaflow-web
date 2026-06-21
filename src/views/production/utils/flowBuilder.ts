@@ -72,6 +72,10 @@ interface VideoList {
   duration: number;
   storyboardId: number;
   trackId: number;
+  src?: string;
+  state?: string;
+  errorReason?: string;
+  mode?: string;
 }
 
 export interface FlowData {
