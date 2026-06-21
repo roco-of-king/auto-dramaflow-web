@@ -130,8 +130,12 @@ function modeChange(newVal: string) {
 
   const applyMode = async (v: string) => {
     modelParmas.value.mode = v;
-    // 同步当前 track 对应分镜的 modelMode
-    const simplifiedMode = Array.isArray(v) ? "multiModal" : v;
+    // 解析模式值：数组模式存为 JSON 字符串，需转回数组再判断
+    let parsedMode: any = v;
+    if (typeof v === "string" && v.startsWith("[")) {
+      try { parsedMode = JSON.parse(v); } catch { /* 保持原值 */ }
+    }
+    const simplifiedMode = Array.isArray(parsedMode) ? "multiModal" : v;
     const track = currentTrack.value as any;
     if (track?.storyboardId) {
       try {
@@ -433,17 +437,19 @@ async function generateVideo() {
             modelParmas.value.mode === "text"
               ? []
               : (() => {
-                  const frameMode = ["startEndRequired", "endFrameOptional", "startFrameOptional"];
-                  const preSliced = frameMode.includes(modelParmas.value.mode)
+                  const frameMode = ["firstLastFrame", "firstFrame", "startEndRequired", "endFrameOptional", "startFrameOptional"];
+                  const isFrameMode = frameMode.includes(modelParmas.value.mode);
+                  const isSingleImage = modelParmas.value.mode === "firstFrame" || modelParmas.value.mode === "singleImage";
+                  const preSliced = isFrameMode
                     ? imageList.value.slice(0, 2)
-                    : modelParmas.value.mode === "singleImage"
+                    : isSingleImage
                       ? imageList.value.slice(0, 1)
                       : imageList.value;
                   const filtered = preSliced
                     .filter((item) => Boolean(item.src) && typeof item.id === "number" && !isNaN(item.id))
                     .map(({ id, sources }) => ({ id, sources }));
-                  if (frameMode.includes(modelParmas.value.mode)) return filtered.slice(0, 2);
-                  if (modelParmas.value.mode === "singleImage") return filtered.slice(0, 1);
+                  if (isFrameMode) return filtered.slice(0, 2);
+                  if (isSingleImage) return filtered.slice(0, 1);
                   return filtered;
                 })(),
           prompt: currentTrack.value.prompt,

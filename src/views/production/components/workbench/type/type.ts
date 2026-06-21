@@ -70,6 +70,7 @@ interface VideoItem {
   src: string;
   state: "未生成" | "生成中" | "已完成" | "生成失败";
   errorReason?: string | null;
+  mode?: string; // 生成该视频时使用的模式
 }
 interface TrackMediaBase {
   src: string;
