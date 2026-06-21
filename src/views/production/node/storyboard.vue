@@ -1,12 +1,7 @@
 <template>
   <t-card class="storyboard">
     <div class="titleBar dragHandle pr">
-      <div class="title">
-        {{ $t("workbench.production.node.storyboard.title") }}
-        <t-tag v-if="isFirstLastFrameMode" theme="primary" variant="light" size="small" style="margin-left:8px">首尾帧模式</t-tag>
-        <t-tag v-else-if="isMultiModalMode" theme="success" variant="light" size="small" style="margin-left:8px">多模态参考模式</t-tag>
-        <t-tag v-else-if="isTextMode" theme="default" variant="light" size="small" style="margin-left:8px">文生视频模式</t-tag>
-      </div>
+      <div class="title">{{ $t("workbench.production.node.storyboard.title") }}</div>
       <Handle :id="props.handleIds.target" type="target" :position="Position.Left" style="left: calc(-1 * var(--td-comp-paddingLR-xl))" />
       <Handle :id="props.handleIds.source" type="source" :position="Position.Right" style="right: calc(-1 * var(--td-comp-paddingLR-xl))" />
     </div>
@@ -16,7 +11,7 @@
         <div class="frameGrid">
           <template v-for="(item, index) in storyboard" :key="item.id">
             <!-- ===== 首尾帧模式：双卡片布局 ===== -->
-            <div v-if="isFirstLastFrameMode" class="frameItem frameItem--dual" @mouseenter="setHoveredFrame(index)" @mouseleave="setHoveredFrame(null)">
+            <div v-if="item.modelMode === 'firstLastFrame'" class="frameItem frameItem--dual" @mouseenter="setHoveredFrame(index)" @mouseleave="setHoveredFrame(null)">
               <!-- 入场衔接描述 -->
               <div v-if="item.inTransitionDesc" class="transitionDesc transitionDesc--in">
                 <span class="transitionLabel">入场:</span> {{ item.inTransitionDesc }}
@@ -110,6 +105,9 @@
                     <t-checkbox :checked="selectedIds.includes(item.id!)" @click.stop :key="item?.id || index" :value="item.id" />
                     <t-tag class="frameTypeTag" :style="{ backgroundColor: tagColors[index % tagColors.length] }">
                       S{{ String(index + 1).padStart(2, "0") }}
+                    </t-tag>
+                    <t-tag v-if="item.modelMode" class="modeLabelTag" size="small" variant="outline" :theme="getModeTheme(item.modelMode)">
+                      {{ getModeShortLabel(item.modelMode) }}
                     </t-tag>
                   </div>
 
@@ -227,16 +225,25 @@ const gridScale = useLocalStorage("storyboardGridScale", 1);
 const hoveredIndex = ref<number | null>(null);
 const selectedIds = ref<number[]>([]);
 
-// 判断当前分镜面板模式
-const isFirstLastFrameMode = computed(() =>
-  storyboard.value.some((s) => s.modelMode === "firstLastFrame"),
-);
-const isMultiModalMode = computed(() =>
-  storyboard.value.some((s) => s.modelMode === "multiModal"),
-);
-const isTextMode = computed(() =>
-  storyboard.value.length > 0 && storyboard.value.every((s) => s.modelMode === "text" || !s.modelMode),
-);
+// 逐镜模式标签辅助
+const MODE_SHORT_LABEL: Record<string, string> = {
+  firstLastFrame: "首尾帧",
+  firstFrame: "首帧",
+  multiModal: "多参",
+  videoExtension: "延长",
+  videoEditing: "编辑",
+  text: "文本",
+};
+const MODE_THEME: Record<string, "primary" | "success" | "warning" | "danger" | "default"> = {
+  firstLastFrame: "primary",
+  firstFrame: "primary",
+  multiModal: "success",
+  videoExtension: "warning",
+  videoEditing: "danger",
+  text: "default",
+};
+function getModeShortLabel(mode?: string) { return MODE_SHORT_LABEL[mode || ""] || mode || ""; }
+function getModeTheme(mode?: string) { return MODE_THEME[mode || ""] || "default"; }
 
 function setHoveredFrame(index: number | null) {
   hoveredIndex.value = index;
@@ -485,7 +492,7 @@ async function removeFn(id: number) {
 }
 
 function editInfo(item: Storyboard) {
-  const isDual = isFirstLastFrameMode.value;
+  const isDual = item.modelMode === "firstLastFrame";
   const formData = reactive({
     prompt: item.prompt ?? "",
     videoDesc: item?.videoDesc ?? "",
@@ -776,6 +783,13 @@ function editInfo(item: Storyboard) {
     padding: 0 4px;
     line-height: 18px;
     border-radius: 3px;
+  }
+
+  .modeLabelTag {
+    font-size: 9px;
+    padding: 0 3px;
+    line-height: 16px;
+    margin-left: 2px;
   }
 
   .frameTag {

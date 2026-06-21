@@ -43,7 +43,7 @@
     }
   },
   "settings": {
-    "title": "ToonFlow Settings",
+    "title": "DramaFlow Settings",
     "menu": {
       "language": "Language",
       "vendorConfig": "Model Providers",
@@ -191,19 +191,19 @@
       "confirm": "Confirm",
       "cancel": "Cancel",
       "selectModel": "Select Model",
-      "fillKeyHeader": "Enter official KEY from Toonflow platform",
+      "fillKeyHeader": "Enter official KEY from Dramaflow platform",
       "keyPlaceholder": "Please enter KEY",
       "save": "Save",
       "msg": {
         "notAvailable": "This feature is not yet available. Stay tuned!",
         "configSuccess": "Configured successfully",
         "updateConfigFailed": "Failed to update config: ",
-        "keyValid": "KEY is valid. Successfully connected to the Toonflow platform",
+        "keyValid": "KEY is valid. Successfully connected to the Dramaflow platform",
         "keyInvalid": "KEY is invalid. Please check and re-enter: ",
         "enterKey": "Please enter KEY",
         "saveFailed": "Save failed: ",
         "getAgentListFailed": "Failed to fetch Agent config list: ",
-        "toonflowNotFound": "Toonflow official transfer station does not exist"
+        "dramaflowNotFound": "Dramaflow official transfer station does not exist"
       },
       "temperature": "temperature"
     },
@@ -318,7 +318,7 @@
     "skill": {
       "scanSkills": "Scan Skills",
       "addSkill": "Add Skill",
-      "importFromHub": "Import from Toonflow-Hub",
+      "importFromHub": "Import from Dramaflow-Hub",
       "filterType": "Type",
       "filterAttribution": "Attribution",
       "searchPlaceholder": "Search skill by name",
@@ -338,7 +338,7 @@
       "embedding": "Embed",
       "edit": "Edit",
       "delete": "Delete",
-      "importFromHubDialog": "Import from Toonflow-Hub",
+      "importFromHubDialog": "Import from Dramaflow-Hub",
       "shareLink": "Share Link",
       "editSkillTitle": "Edit Skill - ",
       "addSkillTitle": "Add Skill",
@@ -512,9 +512,9 @@
       "warning": "The following are developer tools, please operate with caution!",
       "openDevtool": "Open",
       "devtoolsDoc": "Document address",
-      "devtoolsDesc": "After being turned on, a .devtools folder will be created in the Toonflow installation directory. Please ensure that Toonflow has write permissions (run as administrator).",
+      "devtoolsDesc": "After being turned on, a .devtools folder will be created in the Dramaflow installation directory. Please ensure that Dramaflow has write permissions (run as administrator).",
       "devtoolsDesc2": "Run npx {'@'}ai-sdk/devtools in this directory to enable telemetry debugging",
-      "openDevtoolFailed": "Failed to open developer tools, please make sure Toonflow desktop is installed",
+      "openDevtoolFailed": "Failed to open developer tools, please make sure Dramaflow desktop is installed",
       "notInElectron": "For WEB environment, please open the browser console manually",
       "msg": {
         "localStorageKeyRequired": "Please enter a localStorage key",
@@ -798,7 +798,7 @@
       "selectAssets": "Select Assets",
       "noAssets": "No related assets",
       "selectAssetsTitle": "Select Related Assets",
-      "welcomeMsg": "Hello! I am the Toonflow AI Assistant. Would you like me to start generating a script?",
+      "welcomeMsg": "Hello! I am the Dramaflow AI Assistant. Would you like me to start generating a script?",
       "start": "Start",
       "memoryType": {
         "message": "Message Memory",
@@ -1564,7 +1564,7 @@
     "prompt": "prompt word"
   },
   "hello": {
-    "welcomeTitle": "Welcome to ToonFlow",
+    "welcomeTitle": "Welcome to DramaFlow",
     "welcomeDesc": "AI-driven comic creation workflow platform, let us spend a minute to complete the initial configuration.",
     "startConfig": "Start configuration",
     "skip": "Skip boot",

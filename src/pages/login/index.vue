@@ -12,7 +12,7 @@
       <div class="logoBox fc">
         <div class="logoImg"></div>
         <div class="fc c">
-          <span class="logoText">ToonFlow</span>
+          <span class="logoText">DramaFlow</span>
           <span class="slogan">{{ $t("login.slogan") }}</span>
         </div>
       </div>
@@ -133,11 +133,10 @@ const handleLogin = () => {
       .logoImg {
         width: 64px;
         height: 64px;
-        background-color: var(--td-text-color-primary);
-        mask: url("@/assets/logo.svg") no-repeat center;
-        mask-size: contain;
-        -webkit-mask: url("@/assets/logo.svg") no-repeat center;
-        -webkit-mask-size: contain;
+        background-image: url("@/assets/logo.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
       }
 
       .logoText {

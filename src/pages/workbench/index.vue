@@ -219,11 +219,10 @@ onUnmounted(() => {
       .logo {
         width: 60%;
         aspect-ratio: 1/1;
-        background-color: var(--td-text-color-primary);
-        mask: url("@/assets/logo.svg") no-repeat center;
-        mask-size: contain;
-        -webkit-mask: url("@/assets/logo.svg") no-repeat center;
-        -webkit-mask-size: contain;
+        background-image: url("@/assets/logo.png");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
       }
     }
     .itemBox {

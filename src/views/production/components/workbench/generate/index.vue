@@ -130,16 +130,17 @@ function modeChange(newVal: string) {
 
   const applyMode = async (v: string) => {
     modelParmas.value.mode = v;
-    // 同步更新所有分镜的 modelMode，使分镜面板布局响应模式切换
+    // 同步当前 track 对应分镜的 modelMode
     const simplifiedMode = Array.isArray(v) ? "multiModal" : v;
-    const storyboardIds = storyboardList.value.map((s: any) => s.id).filter(Boolean);
-    if (storyboardIds.length) {
+    const track = currentTrack.value as any;
+    if (track?.storyboardId) {
       try {
-        await Promise.all(storyboardIds.map((id: number) =>
-          axios.post("/production/storyboard/editStoryboardInfo", { id, modelMode: simplifiedMode })
-        ));
-        // 同步更新本地数据
-        storyboardList.value.forEach((s: any) => { s.modelMode = simplifiedMode; });
+        await axios.post("/production/storyboard/editStoryboardInfo", { id: track.storyboardId, modelMode: simplifiedMode });
+        // 同步本地 storyboardList 中对应项
+        const sb = storyboardList.value.find((s: any) => s.id === track.storyboardId);
+        if (sb) sb.modelMode = simplifiedMode;
+        // 同步 track 自身
+        track.mode = simplifiedMode;
         window.$message.success(`已切换至「${getCurrentModeLabel(simplifiedMode)}」模式`);
       } catch { /* 静默失败 */ }
     }

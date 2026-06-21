@@ -53,6 +53,16 @@ interface TrackItem {
   medias: TrackMedia[];
   videoList: VideoItem[];
   duration: number;
+  /** 该轨道关联的分镜 ID（用于模式同步） */
+  storyboardId?: number;
+  /** 该轨道当前使用的视频生成模式 */
+  mode?: string;
+  /** 该轨道选用的模型 */
+  model?: string;
+  /** 分辨率 */
+  resolution?: string;
+  /** 是否生成音频 */
+  audio?: boolean;
 }
 
 interface VideoItem {
