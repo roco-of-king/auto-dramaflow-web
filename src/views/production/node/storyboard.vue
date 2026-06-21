@@ -10,7 +10,80 @@
       <t-checkbox-group v-model="selectedIds">
         <div class="frameGrid">
           <template v-for="(item, index) in storyboard" :key="item.id">
-            <div class="frameItem" @mouseenter="setHoveredFrame(index)" @mouseleave="setHoveredFrame(null)">
+            <!-- ===== 首尾帧模式：双卡片布局 ===== -->
+            <div v-if="isFirstLastFrameMode" class="frameItem frameItem--dual" @mouseenter="setHoveredFrame(index)" @mouseleave="setHoveredFrame(null)">
+              <!-- 入场衔接描述 -->
+              <div v-if="item.inTransitionDesc" class="transitionDesc transitionDesc--in">
+                <span class="transitionLabel">入场:</span> {{ item.inTransitionDesc }}
+              </div>
+
+              <div class="dualFrameCard">
+                <!-- Sxx-01 首帧 -->
+                <div class="frameCard frameCard--first">
+                  <div class="frameLabel">S{{ String(index + 1).padStart(2, "0") }}-01 首帧</div>
+                  <div
+                    class="frameImage"
+                    :style="{ width: `${200 * gridScale}px`, height: `${200 * gridScale}px` }">
+                    <div class="ac frameCheckbox" :style="{ transform: `scale(${styleMaxSize})` }">
+                      <t-checkbox :checked="selectedIds.includes(item.id!)" @click.stop :key="item?.id || index" :value="item.id" />
+                      <t-tag class="frameTypeTag" :style="{ backgroundColor: tagColors[index % tagColors.length] }">
+                        S{{ String(index + 1).padStart(2, "0") }}
+                      </t-tag>
+                    </div>
+                    <t-image
+                      v-if="item.firstFramePath"
+                      :src="item.firstFramePath"
+                      fit="contain"
+                      class="frameImg" />
+                    <div v-else class="generatingPlaceholder">
+                      <t-empty size="small" title="首帧待生成" />
+                    </div>
+                    <!-- 继承标记 -->
+                    <t-tag v-if="index > 0 && !item.firstFramePath" theme="warning" variant="light" size="small" class="inheritTag">
+                      🔗 继承 S{{ String(index).padStart(2, "0") }}-02
+                    </t-tag>
+                  </div>
+                </div>
+
+                <!-- 箭头 -->
+                <div class="frameArrow">→</div>
+
+                <!-- Sxx-02 尾帧 -->
+                <div class="frameCard frameCard--last">
+                  <div class="frameLabel">S{{ String(index + 1).padStart(2, "0") }}-02 尾帧</div>
+                  <div
+                    class="frameImage"
+                    :style="{ width: `${200 * gridScale}px`, height: `${200 * gridScale}px` }">
+                    <t-image
+                      v-if="item.lastFramePath"
+                      :src="item.lastFramePath"
+                      fit="contain"
+                      class="frameImg" />
+                    <div v-else class="generatingPlaceholder">
+                      <t-empty size="small" title="尾帧待生成" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 出场衔接描述 -->
+              <div v-if="item.outTransitionDesc" class="transitionDesc transitionDesc--out">
+                <span class="transitionLabel">出场:</span> {{ item.outTransitionDesc }}
+              </div>
+
+              <!-- 操作按钮 -->
+              <div class="dualFrameActions">
+                <t-tooltip theme="primary" content="编辑首尾帧信息">
+                  <t-button size="small" variant="outline" @click.stop="editInfo(item)"><i-edit /> 编辑</t-button>
+                </t-tooltip>
+                <t-tooltip theme="primary" content="删除此分镜">
+                  <t-button size="small" variant="outline" theme="danger" @click.stop="removeFn(item.id!)"><i-delete /></t-button>
+                </t-tooltip>
+              </div>
+            </div>
+
+            <!-- ===== 非首尾帧模式：原单卡片布局 ===== -->
+            <div v-else class="frameItem" @mouseenter="setHoveredFrame(index)" @mouseleave="setHoveredFrame(null)">
               <div class="addBetween addBetween--left" :class="{ expanded: hoveredIndex === index }">
                 <t-button
                   theme="primary"
@@ -148,6 +221,11 @@ const gridScale = useLocalStorage("storyboardGridScale", 1);
 
 const hoveredIndex = ref<number | null>(null);
 const selectedIds = ref<number[]>([]);
+
+// 判断当前分镜面板是否为首尾帧模式
+const isFirstLastFrameMode = computed(() =>
+  storyboard.value.some((s) => s.modelMode === "firstLastFrame"),
+);
 
 function setHoveredFrame(index: number | null) {
   hoveredIndex.value = index;
@@ -396,37 +474,85 @@ async function removeFn(id: number) {
 }
 
 function editInfo(item: Storyboard) {
+  const isDual = isFirstLastFrameMode.value;
   const formData = reactive({
     prompt: item.prompt ?? "",
     videoDesc: item?.videoDesc ?? "",
+    firstFramePrompt: item?.firstFramePrompt ?? "",
+    lastFramePrompt: item?.lastFramePrompt ?? "",
+    firstFrameState: item?.firstFrameState ?? "",
+    lastFrameState: item?.lastFrameState ?? "",
   });
 
-  const bodyVNode = () =>
-    h("div", { class: "editInfoForm" }, [
+  const fields: any[] = [
+    h("div", { class: "editInfoField" }, [
+      h("label", { class: "editInfoLabel" }, $t("workbench.production.node.storyboard.prompt")),
+      h(resolveComponent("t-textarea"), {
+        value: formData.prompt,
+        placeholder: $t("workbench.production.node.storyboard.promptPlaceholder"),
+        autosize: { minRows: 3, maxRows: 6 },
+        "onUpdate:value": (v: string) => (formData.prompt = v),
+      }),
+    ]),
+    h("div", { class: "editInfoField" }, [
+      h("label", { class: "editInfoLabel" }, $t("workbench.production.node.storyboard.videoDesc")),
+      h(resolveComponent("t-textarea"), {
+        value: formData.videoDesc,
+        placeholder: $t("workbench.production.node.storyboard.videoDescPlaceholder"),
+        autosize: { minRows: 3, maxRows: 6 },
+        "onUpdate:value": (v: string) => (formData.videoDesc = v),
+      }),
+    ]),
+  ];
+
+  // 首尾帧模式增加首帧/尾帧 prompt 编辑
+  if (isDual) {
+    fields.push(
       h("div", { class: "editInfoField" }, [
-        h("label", { class: "editInfoLabel" }, $t("workbench.production.node.storyboard.prompt")),
+        h("label", { class: "editInfoLabel" }, "首帧状态 (firstFrameState)"),
         h(resolveComponent("t-textarea"), {
-          value: formData.prompt,
-          placeholder: $t("workbench.production.node.storyboard.promptPlaceholder"),
-          autosize: { minRows: 3, maxRows: 6 },
-          "onUpdate:value": (v: string) => (formData.prompt = v),
+          value: formData.firstFrameState,
+          placeholder: "该镜头开始时的画面状态描述",
+          autosize: { minRows: 2, maxRows: 4 },
+          "onUpdate:value": (v: string) => (formData.firstFrameState = v),
         }),
       ]),
       h("div", { class: "editInfoField" }, [
-        h("label", { class: "editInfoLabel" }, $t("workbench.production.node.storyboard.videoDesc")),
+        h("label", { class: "editInfoLabel" }, "尾帧状态 (lastFrameState)"),
         h(resolveComponent("t-textarea"), {
-          value: formData.videoDesc,
-          placeholder: $t("workbench.production.node.storyboard.videoDescPlaceholder"),
-          autosize: { minRows: 3, maxRows: 6 },
-          "onUpdate:value": (v: string) => (formData.videoDesc = v),
+          value: formData.lastFrameState,
+          placeholder: "该镜头结束时的画面状态描述",
+          autosize: { minRows: 2, maxRows: 4 },
+          "onUpdate:value": (v: string) => (formData.lastFrameState = v),
         }),
       ]),
-    ]);
+      h("div", { class: "editInfoField" }, [
+        h("label", { class: "editInfoLabel" }, "首帧图提示词 (firstFramePrompt)"),
+        h(resolveComponent("t-textarea"), {
+          value: formData.firstFramePrompt,
+          placeholder: "用于生成首帧图的 AI 提示词",
+          autosize: { minRows: 2, maxRows: 4 },
+          "onUpdate:value": (v: string) => (formData.firstFramePrompt = v),
+        }),
+      ]),
+      h("div", { class: "editInfoField" }, [
+        h("label", { class: "editInfoLabel" }, "尾帧图提示词 (lastFramePrompt)"),
+        h(resolveComponent("t-textarea"), {
+          value: formData.lastFramePrompt,
+          placeholder: "用于生成尾帧图的 AI 提示词",
+          autosize: { minRows: 2, maxRows: 4 },
+          "onUpdate:value": (v: string) => (formData.lastFramePrompt = v),
+        }),
+      ]),
+    );
+  }
+
+  const bodyVNode = () => h("div", { class: "editInfoForm" }, fields);
 
   const confirmDialog = DialogPlugin.confirm({
     header: $t("workbench.production.node.storyboard.editInfo"),
     body: bodyVNode,
-    width: 480,
+    width: 520,
     confirmBtn: {
       content: $t("common.submit"),
       theme: "primary",
@@ -435,13 +561,26 @@ function editInfo(item: Storyboard) {
     onConfirm: async () => {
       confirmDialog.update({ confirmBtn: { content: $t("common.submitting"), loading: true } });
       try {
-        await axios.post("/production/storyboard/editStoryboardInfo", {
+        const payload: Record<string, any> = {
           id: item.id,
           prompt: formData.prompt,
           videoDesc: formData.videoDesc,
-        });
+        };
+        if (isDual) {
+          payload.firstFrameState = formData.firstFrameState;
+          payload.lastFrameState = formData.lastFrameState;
+          payload.firstFramePrompt = formData.firstFramePrompt;
+          payload.lastFramePrompt = formData.lastFramePrompt;
+        }
+        await axios.post("/production/storyboard/editStoryboardInfo", payload);
         item.prompt = formData.prompt;
         item.videoDesc = formData.videoDesc;
+        if (isDual) {
+          item.firstFrameState = formData.firstFrameState;
+          item.lastFrameState = formData.lastFrameState;
+          item.firstFramePrompt = formData.firstFramePrompt;
+          item.lastFramePrompt = formData.lastFramePrompt;
+        }
         window.$message.success($t("common.editSuccess"));
       } catch (e) {
         window.$message.error((e as any)?.message || $t("common.editFailed"));
@@ -677,5 +816,71 @@ function editInfo(item: Storyboard) {
 .editInfoLabel {
   font-size: 13px;
   color: var(--td-text-color-secondary);
+}
+
+/* ===== 首尾帧双卡片布局样式 ===== */
+.frameItem--dual {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px;
+  border: 1px dashed var(--td-component-border);
+  border-radius: 8px;
+  background: var(--td-bg-color-container);
+}
+
+.transitionDesc {
+  font-size: 11px;
+  color: var(--td-text-color-placeholder);
+  line-height: 1.4;
+  padding: 4px 8px;
+  background: var(--td-bg-color-secondarycontainer);
+  border-radius: 4px;
+}
+
+.transitionLabel {
+  font-weight: 600;
+  color: var(--td-brand-color);
+}
+
+.dualFrameCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.frameCard--first,
+.frameCard--last {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.frameLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--td-text-color-secondary);
+}
+
+.frameArrow {
+  font-size: 20px;
+  color: var(--td-brand-color);
+  font-weight: 700;
+}
+
+.inheritTag {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  z-index: 3;
+}
+
+.dualFrameActions {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 4px;
 }
 </style>

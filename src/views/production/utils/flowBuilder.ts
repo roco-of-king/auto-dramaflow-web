@@ -53,6 +53,17 @@ export interface Storyboard {
   reason?: string;
   videoDesc: string;
   shouldGenerateImage: number;
+  // 首尾帧扩展字段
+  firstFrameState?: string;
+  lastFrameState?: string;
+  firstFramePrompt?: string;
+  lastFramePrompt?: string;
+  firstFramePath?: string;
+  lastFramePath?: string;
+  inTransitionDesc?: string;
+  outTransitionDesc?: string;
+  modelMode?: string;
+  extendsFromId?: number;
 }
 
 interface VideoList {
