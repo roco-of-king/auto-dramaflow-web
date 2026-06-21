@@ -278,14 +278,19 @@ function handleResolutionChange(res: string) {
 /** 当前模型所有可选模式列表（用于下拉选择） */
 const modeList = computed(() => {
   const modeLabelMap: Record<string, string> = {
-    singleImage: "单图",
-    startEndRequired: "首尾帧",
+    text: "文生视频",
+    firstFrame: "首帧生视频",
+    firstLastFrame: "首尾帧生视频",
+    multiModal: "多模态参考",
+    videoExtension: "视频延长",
+    videoEditing: "视频编辑",
+    singleImage: "单图生视频",
+    startEndRequired: "首尾帧生视频",
     endFrameOptional: "尾帧可选",
     startFrameOptional: "首帧可选",
-    text: "文本生视频",
-    videoReference: "视频",
-    imageReference: "图片",
-    audioReference: "音频",
+    videoReference: "视频参考",
+    imageReference: "图片参考",
+    audioReference: "音频参考",
     textReference: "文本",
   };
   return modeOptions.value.mode

@@ -276,7 +276,7 @@
         </t-radio-group>
         <div class="linkAdd" v-if="addMode == 'linkAdd'">
           <t-alert theme="warning" style="margin-bottom: 20px">
-            请填写 TypeScript 代码文件的链接（.ts 文件），不要填 API 地址或其他无关链接。 确认后 Toonflow 会自动加载该代码，请确保链接来源可信。
+            请填写 TypeScript 代码文件的链接（.ts 文件），不要填 API 地址或其他无关链接。 确认后 Dramaflow 会自动加载该代码，请确保链接来源可信。
           </t-alert>
           <t-input v-model="link" :placeholder="$t('settings.vendor.linkAddPlaceholder')"></t-input>
           <div style="margin-top: 10px; text-align: right; width: 100%">
@@ -434,7 +434,16 @@ function getTypeLabel(type: string) {
   return TYPE_LABEL_MAP[type] || type;
 }
 
+const NEW_MODE_LABELS: Record<string, string> = {
+  firstFrame: "首帧生视频",
+  firstLastFrame: "首尾帧生视频",
+  multiModal: "多模态参考",
+  videoExtension: "视频延长",
+  videoEditing: "视频编辑",
+};
+
 function getModeLabel(mode: string, type: string) {
+  if (NEW_MODE_LABELS[mode]) return NEW_MODE_LABELS[mode];
   if (mode === "text") return $t(type === "image" ? "settings.vendor.textToImage" : "settings.vendor.textToVideo");
   // Handle reference:number format like "videoReference:2"
   const refMatch = String(mode).match(/^(videoReference|imageReference|audioReference):(\d+)$/);

@@ -674,14 +674,20 @@ type VideoMode =
   | (`videoReference:${number}` | `imageReference:${number}` | `audioReference:${number}`)[]; //多参考（数字代表限制数量）
 const mode = ref<{ label: string; value: string }[]>([]);
 const MODE_LABEL: Record<string, string> = {
-  singleImage: $t("workbench.production.generate.modeSingleImage"),
-  startEndRequired: $t("workbench.production.generate.modeStartEnd"),
-  endFrameOptional: $t("workbench.production.generate.modeStartEnd"),
-  startFrameOptional: $t("workbench.production.generate.modeStartEnd"),
-  text: $t("workbench.production.generate.modeText"),
-  videoReference: $t("workbench.production.generate.modeVideoRef"),
-  imageReference: $t("workbench.production.generate.modeImageRef"),
-  audioReference: $t("workbench.production.generate.modeAudioRef"),
+  text: "文生视频",
+  firstFrame: "首帧生视频",
+  firstLastFrame: "首尾帧生视频",
+  multiModal: "多模态参考",
+  videoExtension: "视频延长",
+  videoEditing: "视频编辑",
+  // 旧版兼容
+  singleImage: "单图生视频",
+  startEndRequired: "首尾帧生视频",
+  endFrameOptional: "尾帧可选",
+  startFrameOptional: "首帧可选",
+  videoReference: "视频参考",
+  imageReference: "图片参考",
+  audioReference: "音频参考",
 };
 // 模式转换为统一的 key 形式，方便后续处理
 function getModeLabel(mode?: VideoMode): string {
