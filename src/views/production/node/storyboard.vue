@@ -34,8 +34,9 @@
                       v-if="item.firstFramePath"
                       :src="item.firstFramePath"
                       fit="contain"
-                      class="frameImg" />
-                    <div v-else class="generatingPlaceholder">
+                      class="frameImg"
+                      @click="editStoryboaryImage(item, [item.firstFramePath])" />
+                    <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
                       <t-empty size="small" title="首帧待生成" />
                     </div>
                     <!-- 继承标记 -->
@@ -58,8 +59,9 @@
                       v-if="item.lastFramePath"
                       :src="item.lastFramePath"
                       fit="contain"
-                      class="frameImg" />
-                    <div v-else class="generatingPlaceholder">
+                      class="frameImg"
+                      @click="editStoryboaryImage(item, [item.lastFramePath])" />
+                    <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
                       <t-empty size="small" title="尾帧待生成" />
                     </div>
                   </div>
