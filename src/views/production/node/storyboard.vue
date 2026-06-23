@@ -194,10 +194,6 @@
       :onDownload="downLoadImage"
       :imageScale="{ max: 10, min: 0.1 }" />
   </t-card>
-  <!-- 调试：弹窗左上角红色标签 -->
-  <div v-if="visible" style="position:fixed;top:0;left:0;z-index:99999;background:red;color:white;padding:8px 12px;font-size:16px;font-weight:bold">
-    {{ currentRowStoryboardInfo.frameType === 'firstFrame' ? '正在编辑：首帧' : currentRowStoryboardInfo.frameType === 'lastFrame' ? '正在编辑：尾帧' : '正在编辑：通用' }}
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -427,7 +423,7 @@ function editStoryboaryImage(item: Storyboard, images: string[], insertAfterInde
   } else {
     currentRow.value.referanceImages = images.filter(Boolean);
   }
-  console.log("[storyboard] 打开弹窗前 currentRow:", JSON.stringify({ src: currentRow.value.resultImages[0]?.src?.substring(0, 30), prompt: currentRow.value.resultImages[0]?.prompt?.substring(0, 30), key: editImageKey.value }));
+  alert(`正在编辑：${frameType === 'firstFrame' ? '首帧' : frameType === 'lastFrame' ? '尾帧' : '默认'}\n\nprompt前50字：${(frameType === 'firstFrame' ? item.firstFramePrompt : frameType === 'lastFrame' ? item.lastFramePrompt : item.prompt)?.substring(0, 50)}`);
   visible.value = false;
   editImageKey.value++;
   setTimeout(() => { visible.value = true; }, 50);
