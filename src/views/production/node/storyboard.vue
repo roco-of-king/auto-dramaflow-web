@@ -36,16 +36,11 @@
                         :src="item.firstFramePath"
                         fit="contain"
                         class="frameImg"
-                        @click="editStoryboaryImage(item, [item.firstFramePath])">
-                        <template #overlayContent>
-                          <div class="imageToolsWrap" style="opacity:1;pointer-events:auto">
-                            <ImageTools :src="item.firstFramePath" position="br" />
-                          </div>
-                        </template>
-                      </t-image>
+                        @click="editStoryboaryImage(item, [item.firstFramePath])" />
                       <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
                         <t-empty size="small" title="首帧待生成" />
                       </div>
+                      <ImageTools v-if="item.firstFramePath" :src="item.firstFramePath" position="br" />
                     </div>
                     <!-- 继承标记 -->
                     <t-tag v-if="index > 0 && !item.firstFramePath" theme="warning" variant="light" size="small" class="inheritTag">
@@ -69,16 +64,11 @@
                         :src="item.lastFramePath"
                         fit="contain"
                         class="frameImg"
-                        @click="editStoryboaryImage(item, [item.lastFramePath])">
-                        <template #overlayContent>
-                          <div class="imageToolsWrap" style="opacity:1;pointer-events:auto">
-                            <ImageTools :src="item.lastFramePath" position="br" />
-                          </div>
-                        </template>
-                      </t-image>
+                        @click="editStoryboaryImage(item, [item.lastFramePath])" />
                       <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
                         <t-empty size="small" title="尾帧待生成" />
                       </div>
+                      <ImageTools v-if="item.lastFramePath" :src="item.lastFramePath" position="br" />
                     </div>
                   </div>
                 </div>
@@ -935,10 +925,8 @@ function editInfo(item: Storyboard) {
   margin-top: 4px;
 }
 
-.frameImgActions {
-  display: flex;
-  gap: 2px;
-  justify-content: center;
-  margin-top: 2px;
+.frameImgWrap {
+  position: relative;
+  display: inline-block;
 }
 </style>
