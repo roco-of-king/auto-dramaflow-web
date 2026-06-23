@@ -35,8 +35,8 @@
                       :src="item.firstFramePath"
                       fit="contain"
                       class="frameImg"
-                      @click="editStoryboaryImage(item, [item.firstFramePath])" />
-                    <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
+                      @click="editStoryboaryImage(item, [item.firstFramePath], null, 'firstFrame')" />
+                    <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [], null, 'firstFrame')">
                       <t-empty size="small" title="首帧待生成" />
                     </div>
                     <!-- 继承标记 -->
@@ -60,8 +60,8 @@
                       :src="item.lastFramePath"
                       fit="contain"
                       class="frameImg"
-                      @click="editStoryboaryImage(item, [item.lastFramePath])" />
-                    <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
+                      @click="editStoryboaryImage(item, [item.lastFramePath], null, 'lastFrame')" />
+                    <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [], null, 'lastFrame')">
                       <t-empty size="small" title="尾帧待生成" />
                     </div>
                   </div>
@@ -371,10 +371,11 @@ async function batchGenerateImage() {
     generateLoading.value = false;
   }
 }
-function editStoryboaryImage(item: Storyboard, images: string[], insertAfterIndex: number | null = null) {
+function editStoryboaryImage(item: Storyboard, images: string[], insertAfterIndex: number | null = null, frameType?: "firstFrame" | "lastFrame") {
   currentRowStoryboardInfo.value = {
     id: insertAfterIndex == null ? item?.id! : null,
     insertAfterIndex,
+    frameType: frameType ?? null,
   };
   currentRow.value = {
     flowId: item?.flowId ?? null,
@@ -413,7 +414,11 @@ function editStoryboaryImage(item: Storyboard, images: string[], insertAfterInde
     //   imagesPush = imagesPush.concat(referenImages);
     // }
     currentRow.value.referanceImages = imagesPush;
-    currentRow.value.resultImages = [{ src: images.length ? images[0] : "", prompt: item.prompt ?? "" }];
+    // 首帧使用 firstFramePrompt，尾帧使用 lastFramePrompt
+    const framePrompt = frameType === "firstFrame" ? (item.firstFramePrompt ?? item.prompt)
+                     : frameType === "lastFrame"  ? (item.lastFramePrompt ?? item.prompt)
+                     : item.prompt;
+    currentRow.value.resultImages = [{ src: images.length ? images[0] : "", prompt: framePrompt ?? "" }];
   } else {
     currentRow.value.referanceImages = images.filter(Boolean);
   }
@@ -447,10 +452,16 @@ async function save({ imageUrl, flowId }: { imageUrl: string; flowId: number }) 
     return;
   }
 
-  // 更新模式：更新对应分镜的 src
+  // 更新模式：根据帧类型更新对应字段
   const target = storyboard.value.find((s) => s.id === id);
   if (target) {
-    target.src = imageUrl;
+    if (currentRowStoryboardInfo.value.frameType === "firstFrame") {
+      target.firstFramePath = imageUrl;
+    } else if (currentRowStoryboardInfo.value.frameType === "lastFrame") {
+      target.lastFramePath = imageUrl;
+    } else {
+      target.src = imageUrl;
+    }
     target.state = "已完成";
     target.flowId = flowId;
   }
