@@ -30,18 +30,22 @@
                         S{{ String(index + 1).padStart(2, "0") }}
                       </t-tag>
                     </div>
-                    <t-image
-                      v-if="item.firstFramePath"
-                      :src="item.firstFramePath"
-                      fit="contain"
-                      class="frameImg"
-                      @click="editStoryboaryImage(item, [item.firstFramePath])" />
-                    <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
-                      <t-empty size="small" title="首帧待生成" />
-                    </div>
-                    <div v-if="item.firstFramePath" class="frameImgActions">
-                      <t-button size="small" variant="text" @click.stop="previewSingleImage(item.firstFramePath)">🔍</t-button>
-                      <t-button size="small" variant="text" @click.stop="downloadSingleImage(item.firstFramePath)">📥</t-button>
+                    <div class="frameImgWrap">
+                      <t-image
+                        v-if="item.firstFramePath"
+                        :src="item.firstFramePath"
+                        fit="contain"
+                        class="frameImg"
+                        @click="editStoryboaryImage(item, [item.firstFramePath])">
+                        <template #overlayContent>
+                          <div class="imageToolsWrap" style="opacity:1;pointer-events:auto">
+                            <ImageTools :src="item.firstFramePath" position="br" />
+                          </div>
+                        </template>
+                      </t-image>
+                      <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
+                        <t-empty size="small" title="首帧待生成" />
+                      </div>
                     </div>
                     <!-- 继承标记 -->
                     <t-tag v-if="index > 0 && !item.firstFramePath" theme="warning" variant="light" size="small" class="inheritTag">
@@ -59,18 +63,22 @@
                   <div
                     class="frameImage"
                     :style="{ width: `${200 * gridScale}px`, height: `${200 * gridScale}px` }">
-                    <t-image
-                      v-if="item.lastFramePath"
-                      :src="item.lastFramePath"
-                      fit="contain"
-                      class="frameImg"
-                      @click="editStoryboaryImage(item, [item.lastFramePath])" />
-                    <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
-                      <t-empty size="small" title="尾帧待生成" />
-                    </div>
-                    <div v-if="item.lastFramePath" class="frameImgActions">
-                      <t-button size="small" variant="text" @click.stop="previewSingleImage(item.lastFramePath)">🔍</t-button>
-                      <t-button size="small" variant="text" @click.stop="downloadSingleImage(item.lastFramePath)">📥</t-button>
+                    <div class="frameImgWrap">
+                      <t-image
+                        v-if="item.lastFramePath"
+                        :src="item.lastFramePath"
+                        fit="contain"
+                        class="frameImg"
+                        @click="editStoryboaryImage(item, [item.lastFramePath])">
+                        <template #overlayContent>
+                          <div class="imageToolsWrap" style="opacity:1;pointer-events:auto">
+                            <ImageTools :src="item.lastFramePath" position="br" />
+                          </div>
+                        </template>
+                      </t-image>
+                      <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
+                        <t-empty size="small" title="尾帧待生成" />
+                      </div>
                     </div>
                   </div>
                 </div>
