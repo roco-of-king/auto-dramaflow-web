@@ -198,7 +198,6 @@
 
 <script setup lang="ts">
 import { useLocalStorage } from "@vueuse/core";
-import { nextTick } from "vue";
 import editImage from "../components/editImage/index.vue";
 import { LoadingPlugin } from "tdesign-vue-next";
 import { Handle, Position, type Edge } from "@vue-flow/core";
@@ -373,7 +372,7 @@ async function batchGenerateImage() {
     generateLoading.value = false;
   }
 }
-async function editStoryboaryImage(item: Storyboard, images: string[], insertAfterIndex: number | null = null, frameType?: "firstFrame" | "lastFrame") {
+function editStoryboaryImage(item: Storyboard, images: string[], insertAfterIndex: number | null = null, frameType?: "firstFrame" | "lastFrame") {
   currentRowStoryboardInfo.value = {
     id: insertAfterIndex == null ? item?.id! : null,
     insertAfterIndex,
@@ -426,8 +425,7 @@ async function editStoryboaryImage(item: Storyboard, images: string[], insertAft
   }
   visible.value = false;
   editImageKey.value++;
-  await nextTick();
-  visible.value = true;
+  setTimeout(() => { visible.value = true; }, 50);
 }
 
 async function save({ imageUrl, flowId }: { imageUrl: string; flowId: number }) {
