@@ -55,6 +55,7 @@ import videoCard from "./components/video.vue";
 import "@/views/production/components/workbench/type/type";
 import axios from "@/utils/axios";
 import projectStore from "@/stores/project";
+import productionAgentStore from "@/stores/productionAgent";
 import promptEditor from "@/components/promptEditor.vue";
 import imageListCacheStore from "@/stores/imageListCache";
 
@@ -146,6 +147,10 @@ function modeChange(newVal: string) {
         if (sb) sb.modelMode = simplifiedMode;
         // 同步 track 自身
         track.mode = simplifiedMode;
+        // 级联同步 store 的 flowData.storyboard，使分镜面板即时展示 mode 标签
+        const prodStore = productionAgentStore();
+        const storeSb = prodStore.flowData.storyboard?.find((s: any) => s.id === track.storyboardId);
+        if (storeSb) storeSb.modelMode = simplifiedMode;
         window.$message.success(`已切换至「${getCurrentModeLabel(simplifiedMode)}」模式`);
       } catch { /* 静默失败 */ }
     }
