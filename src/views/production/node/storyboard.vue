@@ -35,14 +35,14 @@
                       :src="item.firstFramePath"
                       fit="contain"
                       class="frameImg"
-                      @click="editStoryboaryImage(item, [item.firstFramePath])">
-                      <template #overlayContent>
-                        <div class="imageToolsWrap show">
-                          <ImageTools :style="{ transform: `scale(${styleMaxSize})` }" :src="item.firstFramePath" position="br" />
-                        </div>
-                      </template>
-                    </t-image>
+                      @click="editStoryboaryImage(item, [item.firstFramePath])" />
                     <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
+                      <t-empty size="small" title="首帧待生成" />
+                    </div>
+                    <div v-if="item.firstFramePath" class="frameImgActions">
+                      <t-button size="small" variant="text" @click.stop="previewSingleImage(item.firstFramePath)">🔍</t-button>
+                      <t-button size="small" variant="text" @click.stop="downloadSingleImage(item.firstFramePath)">📥</t-button>
+                    </div>
                       <t-empty size="small" title="首帧待生成" />
                     </div>
                     <!-- 继承标记 -->
@@ -66,14 +66,14 @@
                       :src="item.lastFramePath"
                       fit="contain"
                       class="frameImg"
-                      @click="editStoryboaryImage(item, [item.lastFramePath])">
-                      <template #overlayContent>
-                        <div class="imageToolsWrap show">
-                          <ImageTools :style="{ transform: `scale(${styleMaxSize})` }" :src="item.lastFramePath" position="br" />
-                        </div>
-                      </template>
-                    </t-image>
+                      @click="editStoryboaryImage(item, [item.lastFramePath])" />
                     <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
+                      <t-empty size="small" title="尾帧待生成" />
+                    </div>
+                    <div v-if="item.lastFramePath" class="frameImgActions">
+                      <t-button size="small" variant="text" @click.stop="previewSingleImage(item.lastFramePath)">🔍</t-button>
+                      <t-button size="small" variant="text" @click.stop="downloadSingleImage(item.lastFramePath)">📥</t-button>
+                    </div>
                       <t-empty size="small" title="尾帧待生成" />
                     </div>
                   </div>
@@ -258,6 +258,8 @@ const MODE_THEME: Record<string, "primary" | "success" | "warning" | "danger" | 
 };
 function getModeShortLabel(mode?: string) { return MODE_SHORT_LABEL[mode || ""] || mode || ""; }
 function getModeTheme(mode?: string) { return MODE_THEME[mode || ""] || "default"; }
+function previewSingleImage(src: string) { previewImages.value = [src]; previewVisible.value = true; }
+function downloadSingleImage(src: string) { const a = document.createElement("a"); a.href = src; a.download = ""; a.click(); }
 
 function setHoveredFrame(index: number | null) {
   hoveredIndex.value = index;
@@ -780,14 +782,9 @@ function editInfo(item: Storyboard) {
   }
 
   .frameImage {
-    &:hover :deep(.imageToolsWrap) {
-      opacity: 1 !important;
-      pointer-events: auto !important;
-    }
     :deep(.imageToolsWrap) {
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
+      opacity: 1;
+      pointer-events: auto;
     }
   }
 
@@ -932,5 +929,12 @@ function editInfo(item: Storyboard) {
   gap: 6px;
   justify-content: center;
   margin-top: 4px;
+}
+
+.frameImgActions {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+  margin-top: 2px;
 }
 </style>
