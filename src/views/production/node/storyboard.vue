@@ -35,7 +35,13 @@
                       :src="item.firstFramePath"
                       fit="contain"
                       class="frameImg"
-                      @click="editStoryboaryImage(item, [item.firstFramePath])" />
+                      @click="editStoryboaryImage(item, [item.firstFramePath])">
+                      <template #overlayContent>
+                        <div class="imageToolsWrap show">
+                          <ImageTools :style="{ transform: `scale(${styleMaxSize})` }" :src="item.firstFramePath" position="br" />
+                        </div>
+                      </template>
+                    </t-image>
                     <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
                       <t-empty size="small" title="首帧待生成" />
                     </div>
@@ -60,7 +66,13 @@
                       :src="item.lastFramePath"
                       fit="contain"
                       class="frameImg"
-                      @click="editStoryboaryImage(item, [item.lastFramePath])" />
+                      @click="editStoryboaryImage(item, [item.lastFramePath])">
+                      <template #overlayContent>
+                        <div class="imageToolsWrap show">
+                          <ImageTools :style="{ transform: `scale(${styleMaxSize})` }" :src="item.lastFramePath" position="br" />
+                        </div>
+                      </template>
+                    </t-image>
                     <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
                       <t-empty size="small" title="尾帧待生成" />
                     </div>
