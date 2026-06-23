@@ -185,7 +185,7 @@
         </t-button> -->
       </div>
     </div>
-    <editImage v-model="visible" v-if="visible" :key="editImageKey" :flowData="{ ...currentRow }" type="storyboard" @save="save" />
+    <editImage v-model="visible" v-if="visible" :key="editImageKey" :flowData="currentRow" type="storyboard" @save="save" />
     <t-image-viewer
       v-model:visible="previewVisible"
       v-if="previewVisible"
@@ -378,8 +378,9 @@ function editStoryboaryImage(item: Storyboard, images: string[], insertAfterInde
     insertAfterIndex,
     frameType: frameType ?? null,
   };
+  // 首尾帧编辑时不传 flowId，避免后端缓存覆盖当前帧数据
   currentRow.value = {
-    flowId: item?.flowId ?? null,
+    flowId: frameType ? null : (item?.flowId ?? null),
     resultImages: [],
     referanceImages: [],
   };
@@ -423,7 +424,6 @@ function editStoryboaryImage(item: Storyboard, images: string[], insertAfterInde
   } else {
     currentRow.value.referanceImages = images.filter(Boolean);
   }
-  alert(`正在编辑：${frameType === 'firstFrame' ? '首帧' : frameType === 'lastFrame' ? '尾帧' : '默认'}\n\nprompt前50字：${(frameType === 'firstFrame' ? item.firstFramePrompt : frameType === 'lastFrame' ? item.lastFramePrompt : item.prompt)?.substring(0, 50)}`);
   visible.value = false;
   editImageKey.value++;
   setTimeout(() => { visible.value = true; }, 50);
