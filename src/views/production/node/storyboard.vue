@@ -186,10 +186,6 @@
       </div>
     </div>
     <editImage v-model="visible" v-if="visible" :key="editImageKey" :flowData="currentRow" type="storyboard" @save="save" />
-    <!-- 调试：在弹窗上方显示当前编辑的帧类型 -->
-    <div v-if="visible" style="position:fixed;top:0;left:0;z-index:9999;background:red;color:white;padding:4px 8px;font-size:14px">
-      {{ currentRowStoryboardInfo.frameType === 'firstFrame' ? '正在编辑：首帧' : currentRowStoryboardInfo.frameType === 'lastFrame' ? '正在编辑：尾帧' : '正在编辑：通用' }}
-    </div>
     <t-image-viewer
       v-model:visible="previewVisible"
       v-if="previewVisible"
@@ -198,6 +194,10 @@
       :onDownload="downLoadImage"
       :imageScale="{ max: 10, min: 0.1 }" />
   </t-card>
+  <!-- 调试：弹窗左上角红色标签 -->
+  <div v-if="visible" style="position:fixed;top:0;left:0;z-index:99999;background:red;color:white;padding:8px 12px;font-size:16px;font-weight:bold">
+    {{ currentRowStoryboardInfo.frameType === 'firstFrame' ? '正在编辑：首帧' : currentRowStoryboardInfo.frameType === 'lastFrame' ? '正在编辑：尾帧' : '正在编辑：通用' }}
+  </div>
 </template>
 
 <script setup lang="ts">
