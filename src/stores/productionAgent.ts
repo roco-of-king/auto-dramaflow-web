@@ -209,7 +209,7 @@ function makeProductionAgentStore(projectId: string) {
               associateAssetsIds: data.associateAssetsIds || [],
             };
             flowData.value.storyboard.push(insertVal);
-            await addStoryboardInfo([insertVal]);
+            await addStoryboardInfo([insertVal], true); // 跳过确认弹窗(Agent自动调用)
             throttledFn();
             callback({ success: true, message: $t("storyboard.assets.derivativeAddSuccess") });
           });
@@ -489,9 +489,9 @@ function makeProductionAgentStore(projectId: string) {
       });
     }
 
-    async function addStoryboardInfo(items: any[]) {
-      // P10: 如果已有分镜数据，先弹确认窗
-      if (flowData.value.storyboard.length > 0) {
+    async function addStoryboardInfo(items: any[], skipConfirm = false) {
+      // P10: 如果已有分镜数据且非Agent自动调用，先弹确认窗
+      if (!skipConfirm && flowData.value.storyboard.length > 0) {
         const confirmed = await confirmRewriteStoryboard(items);
         if (!confirmed) return;
       }
