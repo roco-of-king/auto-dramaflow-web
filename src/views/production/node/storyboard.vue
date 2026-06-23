@@ -43,8 +43,6 @@
                       <t-button size="small" variant="text" @click.stop="previewSingleImage(item.firstFramePath)">🔍</t-button>
                       <t-button size="small" variant="text" @click.stop="downloadSingleImage(item.firstFramePath)">📥</t-button>
                     </div>
-                      <t-empty size="small" title="首帧待生成" />
-                    </div>
                     <!-- 继承标记 -->
                     <t-tag v-if="index > 0 && !item.firstFramePath" theme="warning" variant="light" size="small" class="inheritTag">
                       🔗 继承 S{{ String(index).padStart(2, "0") }}-02
@@ -73,8 +71,6 @@
                     <div v-if="item.lastFramePath" class="frameImgActions">
                       <t-button size="small" variant="text" @click.stop="previewSingleImage(item.lastFramePath)">🔍</t-button>
                       <t-button size="small" variant="text" @click.stop="downloadSingleImage(item.lastFramePath)">📥</t-button>
-                    </div>
-                      <t-empty size="small" title="尾帧待生成" />
                     </div>
                   </div>
                 </div>
