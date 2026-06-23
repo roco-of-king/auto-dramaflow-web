@@ -423,6 +423,7 @@ function editStoryboaryImage(item: Storyboard, images: string[], insertAfterInde
   } else {
     currentRow.value.referanceImages = images.filter(Boolean);
   }
+  console.log("[storyboard] 打开弹窗前 currentRow:", JSON.stringify({ src: currentRow.value.resultImages[0]?.src?.substring(0, 30), prompt: currentRow.value.resultImages[0]?.prompt?.substring(0, 30), key: editImageKey.value }));
   visible.value = false;
   editImageKey.value++;
   setTimeout(() => { visible.value = true; }, 50);
