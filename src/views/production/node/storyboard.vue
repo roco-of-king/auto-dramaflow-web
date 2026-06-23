@@ -185,7 +185,7 @@
         </t-button> -->
       </div>
     </div>
-    <editImage v-model="visible" v-if="visible" :key="editImageKey" :flowData="currentRow" type="storyboard" @save="save" />
+    <editImage v-model="visible" v-if="visible" :key="editImageKey" :flowData="{ ...currentRow }" type="storyboard" @save="save" />
     <t-image-viewer
       v-model:visible="previewVisible"
       v-if="previewVisible"
