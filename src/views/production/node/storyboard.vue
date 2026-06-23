@@ -372,6 +372,7 @@ async function batchGenerateImage() {
   }
 }
 function editStoryboaryImage(item: Storyboard, images: string[], insertAfterIndex: number | null = null, frameType?: "firstFrame" | "lastFrame") {
+  console.log("[storyboard] 点击帧:", frameType || "默认", "| 图片:", images[0]?.substring(0, 50) || "无", "| prompt来源:", frameType === "firstFrame" ? "firstFramePrompt" : frameType === "lastFrame" ? "lastFramePrompt" : "prompt");
   currentRowStoryboardInfo.value = {
     id: insertAfterIndex == null ? item?.id! : null,
     insertAfterIndex,
