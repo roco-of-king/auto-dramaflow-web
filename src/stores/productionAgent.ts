@@ -111,6 +111,8 @@ function makeProductionAgentStore(projectId: string) {
         // }
         if (status == "complete") {
           throttledFn();
+          // Agent 完成后刷新 flowData，确保分镜面板等数据与 DB 同步
+          getFlowData();
         }
       },
     });
