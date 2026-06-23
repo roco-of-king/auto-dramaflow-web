@@ -30,17 +30,14 @@
                         S{{ String(index + 1).padStart(2, "0") }}
                       </t-tag>
                     </div>
-                    <div class="frameImgWrap">
-                      <t-image
-                        v-if="item.firstFramePath"
-                        :src="item.firstFramePath"
-                        fit="contain"
-                        class="frameImg"
-                        @click="editStoryboaryImage(item, [item.firstFramePath])" />
-                      <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
-                        <t-empty size="small" title="首帧待生成" />
-                      </div>
-                      <ImageTools v-if="item.firstFramePath" :src="item.firstFramePath" position="br" />
+                    <t-image
+                      v-if="item.firstFramePath"
+                      :src="item.firstFramePath"
+                      fit="contain"
+                      class="frameImg"
+                      @click="editStoryboaryImage(item, [item.firstFramePath])" />
+                    <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
+                      <t-empty size="small" title="首帧待生成" />
                     </div>
                     <!-- 继承标记 -->
                     <t-tag v-if="index > 0 && !item.firstFramePath" theme="warning" variant="light" size="small" class="inheritTag">
@@ -58,17 +55,14 @@
                   <div
                     class="frameImage"
                     :style="{ width: `${200 * gridScale}px`, height: `${200 * gridScale}px` }">
-                    <div class="frameImgWrap">
-                      <t-image
-                        v-if="item.lastFramePath"
-                        :src="item.lastFramePath"
-                        fit="contain"
-                        class="frameImg"
-                        @click="editStoryboaryImage(item, [item.lastFramePath])" />
-                      <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
-                        <t-empty size="small" title="尾帧待生成" />
-                      </div>
-                      <ImageTools v-if="item.lastFramePath" :src="item.lastFramePath" position="br" />
+                    <t-image
+                      v-if="item.lastFramePath"
+                      :src="item.lastFramePath"
+                      fit="contain"
+                      class="frameImg"
+                      @click="editStoryboaryImage(item, [item.lastFramePath])" />
+                    <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [])">
+                      <t-empty size="small" title="尾帧待生成" />
                     </div>
                   </div>
                 </div>
@@ -925,8 +919,5 @@ function editInfo(item: Storyboard) {
   margin-top: 4px;
 }
 
-.frameImgWrap {
-  position: relative;
-  display: inline-block;
-}
+/* 双卡片图片与单卡片共用 .frameImg 样式 */
 </style>
