@@ -459,6 +459,7 @@ async function save({ imageUrl, flowId }: { imageUrl: string; flowId: number }) 
   // 更新模式：根据帧类型更新对应字段
   const target = storyboard.value.find((s) => s.id === id);
   if (target) {
+    const isFrame = currentRowStoryboardInfo.value.frameType === "firstFrame" || currentRowStoryboardInfo.value.frameType === "lastFrame";
     if (currentRowStoryboardInfo.value.frameType === "firstFrame") {
       target.firstFramePath = imageUrl;
     } else if (currentRowStoryboardInfo.value.frameType === "lastFrame") {
@@ -468,12 +469,21 @@ async function save({ imageUrl, flowId }: { imageUrl: string; flowId: number }) 
     }
     target.state = "已完成";
     target.flowId = flowId;
+    // 首尾帧用 editStoryboardInfo 持久化 firstFramePath/lastFramePath
+    if (isFrame) {
+      const payload: Record<string, any> = { id };
+      if (currentRowStoryboardInfo.value.frameType === "firstFrame") payload.firstFramePath = imageUrl;
+      if (currentRowStoryboardInfo.value.frameType === "lastFrame") payload.lastFramePath = imageUrl;
+      await axios.post("/production/storyboard/editStoryboardInfo", payload);
+    }
   }
-  await axios.post("/production/storyboard/updateStoryboardUrl", {
-    id: id,
+  // 非首尾帧走原有 updateStoryboardUrl
+  if (currentRowStoryboardInfo.value.frameType !== "firstFrame" && currentRowStoryboardInfo.value.frameType !== "lastFrame") {
+    await axios.post("/production/storyboard/updateStoryboardUrl", { id: id,
     url: imageUrl,
     flowId,
   });
+}
 }
 
 async function removeFn(id: number) {
