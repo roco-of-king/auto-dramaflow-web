@@ -372,6 +372,7 @@ async function batchGenerateImage() {
   }
 }
 function editStoryboaryImage(item: Storyboard, images: string[], insertAfterIndex: number | null = null, frameType?: "firstFrame" | "lastFrame") {
+  console.log("[storyboard] editStoryboaryImage", { frameType, image: images[0], firstFramePrompt: item.firstFramePrompt, lastFramePrompt: item.lastFramePrompt, prompt: item.prompt });
   currentRowStoryboardInfo.value = {
     id: insertAfterIndex == null ? item?.id! : null,
     insertAfterIndex,
