@@ -780,17 +780,14 @@ function editInfo(item: Storyboard) {
   }
 
   .frameImage {
-    .imageToolsWrap {
+    &:hover :deep(.imageToolsWrap) {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+    :deep(.imageToolsWrap) {
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.2s ease;
-    }
-
-    &:hover {
-      .imageToolsWrap {
-        opacity: 1;
-        pointer-events: auto;
-      }
     }
   }
 
