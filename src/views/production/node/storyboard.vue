@@ -60,8 +60,8 @@
                       :src="item.lastFramePath"
                       fit="contain"
                       class="frameImg"
-                      @click="editStoryboaryImage(item, [item.lastFramePath], null, 'lastFrame')" />
-                    <div v-else class="generatingPlaceholder" @click="editStoryboaryImage(item, [], null, 'lastFrame')">
+                      @click.stop="editStoryboaryImage(item, [item.lastFramePath], null, 'lastFrame')" />
+                    <div v-else class="generatingPlaceholder" @click.stop="editStoryboaryImage(item, [], null, 'lastFrame')">
                       <t-empty size="small" title="尾帧待生成" />
                     </div>
                   </div>
