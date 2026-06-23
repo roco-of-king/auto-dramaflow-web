@@ -777,6 +777,9 @@ function editInfo(item: Storyboard) {
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+
+  .frameImage {
     .imageToolsWrap {
       opacity: 0;
       pointer-events: none;
