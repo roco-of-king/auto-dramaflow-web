@@ -185,7 +185,7 @@
         </t-button> -->
       </div>
     </div>
-    <editImage v-model="visible" v-if="visible" :flowData="currentRow" type="storyboard" @save="save" />
+    <editImage v-model="visible" v-if="visible" :key="editImageKey" :flowData="currentRow" type="storyboard" @save="save" />
     <t-image-viewer
       v-model:visible="previewVisible"
       v-if="previewVisible"
@@ -198,7 +198,6 @@
 
 <script setup lang="ts">
 import { useLocalStorage } from "@vueuse/core";
-import { nextTick } from "vue";
 import editImage from "../components/editImage/index.vue";
 import { LoadingPlugin } from "tdesign-vue-next";
 import { Handle, Position, type Edge } from "@vue-flow/core";
@@ -221,6 +220,7 @@ const props = defineProps<{
 const storyboard = defineModel<Storyboard[]>({ required: true });
 
 const visible = ref(false);
+const editImageKey = ref(0);
 const previewVisible = ref(false);
 const previewImages = ref<string[]>([]);
 const gridScale = useLocalStorage("storyboardGridScale", 1);
@@ -372,7 +372,7 @@ async function batchGenerateImage() {
     generateLoading.value = false;
   }
 }
-async function editStoryboaryImage(item: Storyboard, images: string[], insertAfterIndex: number | null = null, frameType?: "firstFrame" | "lastFrame") {
+function editStoryboaryImage(item: Storyboard, images: string[], insertAfterIndex: number | null = null, frameType?: "firstFrame" | "lastFrame") {
   currentRowStoryboardInfo.value = {
     id: insertAfterIndex == null ? item?.id! : null,
     insertAfterIndex,
@@ -423,9 +423,7 @@ async function editStoryboaryImage(item: Storyboard, images: string[], insertAft
   } else {
     currentRow.value.referanceImages = images.filter(Boolean);
   }
-  // 强制先关再开，确保 editImage 组件用新数据重渲染
-  visible.value = false;
-  await nextTick();
+  editImageKey.value++;
   visible.value = true;
 }
 
