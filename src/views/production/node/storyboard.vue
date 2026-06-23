@@ -430,6 +430,7 @@ function editStoryboaryImage(item: Storyboard, images: string[], insertAfterInde
 }
 
 async function save({ imageUrl, flowId }: { imageUrl: string; flowId: number }) {
+  console.log("[save] 被调用", { imageUrl: imageUrl?.substring(0, 30), flowId, frameType: currentRowStoryboardInfo.value.frameType });
   if (!imageUrl) return;
 
   const { id, insertAfterIndex } = currentRowStoryboardInfo.value;
@@ -462,8 +463,10 @@ async function save({ imageUrl, flowId }: { imageUrl: string; flowId: number }) 
     const isFrame = currentRowStoryboardInfo.value.frameType === "firstFrame" || currentRowStoryboardInfo.value.frameType === "lastFrame";
     if (currentRowStoryboardInfo.value.frameType === "firstFrame") {
       target.firstFramePath = imageUrl;
+      console.log("[save] 已设置 firstFramePath:", imageUrl?.substring(0, 30));
     } else if (currentRowStoryboardInfo.value.frameType === "lastFrame") {
       target.lastFramePath = imageUrl;
+      console.log("[save] 已设置 lastFramePath:", imageUrl?.substring(0, 30), "item.lastFramePath:", target.lastFramePath?.substring(0, 30));
     } else {
       target.src = imageUrl;
     }
