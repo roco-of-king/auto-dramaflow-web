@@ -11,7 +11,7 @@
         <div class="frameGrid">
           <template v-for="(item, index) in storyboard" :key="item.id">
             <!-- ===== 首尾帧模式：双卡片布局 ===== -->
-            <div v-if="item.modelMode === 'firstLastFrame'" class="frameItem frameItem--dual" @mouseenter="setHoveredFrame(index)" @mouseleave="setHoveredFrame(null)">
+            <div v-if="item.modelMode === 'firstLastFrame' || item.modelMode === 'startEndRequired'" class="frameItem frameItem--dual" @mouseenter="setHoveredFrame(index)" @mouseleave="setHoveredFrame(null)">
               <!-- 入场衔接描述 -->
               <div v-if="item.inTransitionDesc" class="transitionDesc transitionDesc--in">
                 <span class="transitionLabel">入场:</span> {{ item.inTransitionDesc }}
@@ -497,7 +497,7 @@ async function removeFn(id: number) {
   if (idx !== -1 && idx < storyboard.value.length - 1) {
     const nextItem = storyboard.value[idx + 1];
     const currentItem = storyboard.value[idx];
-    if (nextItem?.modelMode === "firstLastFrame" && !nextItem.firstFramePath && currentItem?.lastFramePath) {
+    if ((nextItem?.modelMode === "firstLastFrame" || nextItem?.modelMode === "startEndRequired") && !nextItem.firstFramePath && currentItem?.lastFramePath) {
       inheritWarning = `\n\n⚠ S${String(idx + 2).padStart(2, "0")}-01 首帧正继承自此分镜的尾帧图，删除后需手动为 S${String(idx + 2).padStart(2, "0")}-01 补充首帧图。`;
     }
   }
@@ -536,7 +536,7 @@ async function removeFn(id: number) {
 }
 
 function editInfo(item: Storyboard) {
-  const isDual = item.modelMode === "firstLastFrame";
+  const isDual = item.modelMode === "firstLastFrame" || item.modelMode === "startEndRequired";
   const formData = reactive({
     prompt: item.prompt ?? "",
     videoDesc: item?.videoDesc ?? "",
