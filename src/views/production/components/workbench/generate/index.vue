@@ -151,6 +151,8 @@ function modeChange(newVal: string) {
         const prodStore = productionAgentStore();
         const storeSb = prodStore.flowData.storyboard?.find((s: any) => s.id === track.storyboardId);
         if (storeSb) storeSb.modelMode = simplifiedMode;
+        // 强制刷新 store，确保级联生效
+        await prodStore.getFlowData();
         window.$message.success(`已切换至「${getCurrentModeLabel(simplifiedMode)}」模式`);
       } catch { /* 静默失败 */ }
     }
