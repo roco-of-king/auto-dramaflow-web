@@ -147,14 +147,18 @@ function modeChange(newVal: string) {
         if (sb) sb.modelMode = simplifiedMode;
         // 同步 track 自身
         track.mode = simplifiedMode;
-        // 级联同步 store 的 flowData.storyboard，使分镜面板即时展示 mode 标签
+        // 级联同步 store 的 flowData.storyboard
         const prodStore = productionAgentStore();
-        const storeSb = prodStore.flowData.storyboard?.find((s: any) => s.id === track.storyboardId);
-        if (storeSb) storeSb.modelMode = simplifiedMode;
-        // 强制刷新 store，确保级联生效
-        await prodStore.getFlowData();
+        if (prodStore) {
+          const storeSb = prodStore.flowData.storyboard?.find((s: any) => s.id === track.storyboardId);
+          if (storeSb) storeSb.modelMode = simplifiedMode;
+        }
         window.$message.success(`已切换至「${getCurrentModeLabel(simplifiedMode)}」模式`);
-      } catch { /* 静默失败 */ }
+      } catch (e) {
+        console.error("[modeChange] 同步失败:", e);
+      }
+    } else {
+      console.warn("[modeChange] track.storyboardId 为空，无法级联");
     }
   };
 
