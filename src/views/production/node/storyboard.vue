@@ -236,6 +236,10 @@ const MODE_SHORT_LABEL: Record<string, string> = {
   videoExtension: "延长",
   videoEditing: "编辑",
   text: "文本",
+  // 旧名兜底
+  startEndRequired: "首尾帧",
+  startFrameOptional: "首帧",
+  singleImage: "首帧",
 };
 const MODE_THEME: Record<string, "primary" | "success" | "warning" | "danger" | "default"> = {
   firstLastFrame: "primary",

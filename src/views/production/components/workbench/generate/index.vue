@@ -130,6 +130,12 @@ const imageList = computed({
 function modeChange(newVal: string) {
   if (newVal == modelParmas.value.mode) return;
 
+  const OLD_TO_NEW_MODE: Record<string, string> = {
+    startEndRequired: "firstLastFrame",
+    endFrameOptional: "firstFrame",
+    startFrameOptional: "firstFrame",
+    singleImage: "firstFrame",
+  };
   const applyMode = async (v: string) => {
     modelParmas.value.mode = v;
     // 解析模式值：数组模式存为 JSON 字符串，需转回数组再判断
@@ -137,7 +143,9 @@ function modeChange(newVal: string) {
     if (typeof v === "string" && v.startsWith("[")) {
       try { parsedMode = JSON.parse(v); } catch { /* 保持原值 */ }
     }
-    const simplifiedMode = Array.isArray(parsedMode) ? "multiModal" : v;
+    let simplifiedMode = Array.isArray(parsedMode) ? "multiModal" : v;
+    // 旧模式名转新模式名
+    simplifiedMode = OLD_TO_NEW_MODE[simplifiedMode] || simplifiedMode;
     const track = currentTrack.value as any;
     if (track?.storyboardId) {
       try {
