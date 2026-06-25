@@ -16,6 +16,10 @@
           <p>{{ $t("settings.dev.devtoolsDesc2") }}</p>
         </template>
       </t-form-item>
+      <t-form-item label="忽略更新提示" name="skipUpdateCheck">
+        <t-switch :customValue="['1', '0']" v-model="skipUpdateCheck" @change="updateSkipUpdateCheck" />
+        <template #tips><p>开启后不再检查版本更新，避免每次启动时的更新提示</p></template>
+      </t-form-item>
 
       <t-form-item :label="$t('settings.dev.localStorage')" name="localStorageManager" class="localStorageFormItem">
         <t-card class="localStorageCard">
@@ -81,6 +85,7 @@ import settingStore from "@/stores/setting";
 const { isElectron } = storeToRefs(settingStore());
 
 const switchAiDevTool = ref("0");
+const skipUpdateCheck = ref("0");
 const localStorageKeyword = ref("");
 const editingKey = ref("");
 const localStorageDialogVisible = ref(false);
@@ -150,6 +155,15 @@ async function getSwitchAiDevTool() {
 
 function updateSwitchAiDevTool() {
   axios.post("/setting/dev/updateSwitchAiDevTool", { switchAiDevTool: switchAiDevTool.value });
+}
+
+async function getSkipUpdateCheck() {
+  const { data } = await axios.get("/setting/dev/getSkipUpdateCheck");
+  skipUpdateCheck.value = data || "0";
+}
+
+function updateSkipUpdateCheck() {
+  axios.post("/setting/dev/updateSkipUpdateCheck", { skipUpdateCheck: skipUpdateCheck.value });
 }
 
 function refreshLocalStorage() {
@@ -301,6 +315,7 @@ function confirmClearLocalStorage() {
 
 onMounted(() => {
   getSwitchAiDevTool();
+  getSkipUpdateCheck();
   refreshLocalStorage();
 });
 </script>
